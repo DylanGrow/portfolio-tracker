@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /*?utm_*
+Disallow: /*?ref=*
+
+Sitemap: https://yourcompany.github.io/portfolio-tracker/sitemap.xml

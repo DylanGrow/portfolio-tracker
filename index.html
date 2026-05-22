@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="description" content="Enterprise-grade portfolio tracking with zero login, complete privacy, and real-time market data visualization.">
+  
+  <!-- Open Graph Protocol -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Portfolio Tracker Pro - Zero-Login Portfolio Management">
+  <meta property="og:description" content="Track investments with institutional-grade tools. No accounts, no tracking, complete privacy.">
+  <meta property="og:image" content="assets/logo.png">
+  <meta property="og:url" content="https://yourcompany.github.io/portfolio-tracker">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Portfolio Tracker Pro">
+  <meta name="twitter:description" content="Privacy-first portfolio management with real-time market data.">
+  <meta name="twitter:image" content="assets/logo.png">
+  
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Portfolio Tracker Pro",
+    "description": "Zero-login portfolio tracking application with real-time market data",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Real-time stock quotes",
+      "Portfolio tracking",
+      "Interactive charts",
+      "Offline support",
+      "Zero data collection"
+    ]
+  }
+  </script>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  
+  <!-- Preload Critical Resources -->
+  <link rel="preload" href="src/styles/main.css" as="style">
+  <link rel="preload" href="src/scripts/app.js" as="script">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="src/styles/main.css">
+  
+  <title>Portfolio Tracker Pro - Enterprise Portfolio Management</title>
+</head>
+<body>
+  <!-- Semantic HTML5 Structure -->
+  <header role="banner" class="app-header">
+    <div class="header-container">
+      <nav role="navigation" aria-label="Main navigation" class="nav-bar">
+        <h1 class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+            <polyline points="16 7 22 7 22 13"></polyline>
+          </svg>
+          <span>Portfolio Tracker Pro</span>
+        </h1>
+        <ul class="nav-menu">
+          <li><a href="#dashboard" class="nav-link active" data-tab="dashboard" aria-current="page">Dashboard</a></li>
+          <li><a href="#watchlist" class="nav-link" data-tab="watchlist">Watchlist</a></li>
+          <li><a href="#portfolio" class="nav-link" data-tab="portfolio">Portfolio</a></li>
+          <li><a href="#charts" class="nav-link" data-tab="charts">Charts</a></li>
+          <li>
+            <button type="button" id="settings-btn" class="icon-btn" aria-label="Settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="settings-svg">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Passphrase Entry Modal (Overlay) -->
+  <div id="auth-modal" class="modal-overlay" aria-modal="true" role="dialog">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <h2>Secure Local Workspace</h2>
+      </div>
+      <p class="modal-desc">Enter your master passphrase to encrypt and load your portfolio data. All calculations and encryption happen 100% locally in your browser.</p>
+      <form id="auth-form" class="modal-form">
+        <div class="input-group">
+          <label for="passphrase-input" class="sr-only">Passphrase</label>
+          <input type="password" id="passphrase-input" placeholder="Master Passphrase" required autocomplete="current-password" minlength="8">
+        </div>
+        <button type="submit" class="btn btn-primary">Decrypt Portfolio</button>
+      </form>
+      <div class="modal-footer-text">
+        <span>🔒 Zero-Knowledge Architecture. We never store or see your password.</span>
+      </div>
+    </div>
+  </div>
+
+  <main role="main" id="app-root" class="app-main container">
+    <!-- Active view injected here dynamically -->
+    
+    <!-- Fallback Content for Non-JS / Pre-load -->
+    <noscript>
+      <div class="noscript-warning glass">
+        <h2>JavaScript Required</h2>
+        <p>Portfolio Tracker Pro requires JavaScript to display real-time market data and interactive charts. 
+        Please enable JavaScript in your browser settings to use this application.</p>
+        <p>Key features include:</p>
+        <ul>
+          <li>Real-time stock price tracking</li>
+          <li>Interactive financial charts</li>
+          <li>Portfolio performance analytics</li>
+          <li>Complete data privacy (all data stored locally)</li>
+          <li>No user accounts or registration required</li>
+        </ul>
+      </div>
+    </noscript>
+  </main>
+
+  <footer role="contentinfo" class="app-footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 Portfolio Tracker Pro. Institutional-grade client-side application with zero data collection.</p>
+      <p class="footer-links">
+        <a href="#privacy">Privacy Policy</a> | 
+        <a href="#terms">Terms of Service</a> | 
+        <a href="https://github.com/yourcompany/portfolio-tracker" target="_blank" rel="noopener noreferrer">Source Code</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Application Scripts (type="module" for ES Modules) -->
+  <script type="module" src="src/scripts/app.js"></script>
+</body>
+</html>

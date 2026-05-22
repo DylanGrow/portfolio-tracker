@@ -1,0 +1,7 @@
+name = "portfolio-api"
+main = "worker.js"
+compatibility_date = "2026-05-22"
+
+[env.production]
+workers_dev = false
+route = "https://api.yourcompany.workers.dev/*"

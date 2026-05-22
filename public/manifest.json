@@ -1,0 +1,37 @@
+{
+  "name": "Portfolio Tracker Pro",
+  "short_name": "Portfolio Pro",
+  "description": "Enterprise-grade portfolio tracking with complete privacy and zero login requirements",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["finance", "business", "productivity"],
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "View Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open portfolio dashboard with market overview",
+      "url": "#dashboard"
+    },
+    {
+      "name": "View Charts",
+      "short_name": "Charts",
+      "description": "Open interactive stock charts",
+      "url": "#charts"
+    }
+  ],
+  "prefer_related_applications": false
+}

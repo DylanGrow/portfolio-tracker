@@ -248,7 +248,7 @@ class App {
         <div class="section-header" style="margin-bottom:2rem;">
           <h2 style="font-size:1.5rem; font-weight:800;">Manage Watchlist</h2>
           <form id="add-ticker-form" class="add-ticker-form">
-            <input type="text" id="new-ticker-input" placeholder="e.g. NVDA" required maxlength="5" style="text-transform:uppercase;">
+            <input type="text" id="new-ticker-input" placeholder="e.g. AAPL or BTC" required maxlength="10" style="text-transform:uppercase;">
             <button type="submit" class="btn btn-primary" style="width:auto;">Add Ticker</button>
           </form>
         </div>

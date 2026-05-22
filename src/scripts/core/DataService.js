@@ -1,8 +1,8 @@
 export class DataService {
   constructor() {
-    // Default Finnhub free tier / demo token or Cloudflare proxy url
+    // API key injected at build time via VITE_FINNHUB_KEY GitHub Actions secret
     this.proxyUrl = 'https://api.finnhub.io/api/v1';
-    this.demoToken = 'd885vv9r01qq4341og9gd885vv9r01qq4341oga0'; // Active Finnhub token
+    this.demoToken = import.meta.env.VITE_FINNHUB_KEY || '';
     this.useMock = false;
     this.cache = new Map();
     this.failureCount = 0;

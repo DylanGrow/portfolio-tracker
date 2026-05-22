@@ -3,9 +3,9 @@ import * as d3 from 'd3';
 export class PortfolioRadar {
   constructor(container) {
     this.container = container;
-    this.width = 320;
-    this.height = 320;
-    this.radius = Math.min(this.width, this.height) / 2 - 35;
+    this.width = 380;
+    this.height = 380;
+    this.radius = Math.min(this.width, this.height) / 2 - 60;
   }
 
   render(portfolioMetrics) {
@@ -14,11 +14,12 @@ export class PortfolioRadar {
 
     const svg = d3.select(this.container)
       .append('svg')
-      .attr('viewBox', `0 0 ${this.width} ${this.height}`)
+      .attr('viewBox', `-40 -40 ${this.width + 80} ${this.height + 80}`)
       .attr('width', '100%')
       .attr('height', '100%')
+      .style('overflow', 'visible')
       .attr('role', 'img')
-      .attr('aria-label', 'Portfolio Simply Wall St Health Radar chart mapping out Diversification, Volatility, Value, Growth, Quality, and Momentum');
+      .attr('aria-label', 'Portfolio Health Radar chart mapping out Diversification, Volatility, Value, Growth, Quality, and Momentum');
     
     // Add glowing filter definitions for visual excellence
     const defs = svg.append('defs');
@@ -85,7 +86,7 @@ export class PortfolioRadar {
         .attr('stroke-width', 1);
       
       // Text Label
-      const labelRadius = this.radius + 18;
+      const labelRadius = this.radius + 28;
       const labelX = labelRadius * Math.cos(angle);
       const labelY = labelRadius * Math.sin(angle);
       

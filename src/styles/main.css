@@ -872,3 +872,143 @@ input:focus, select:focus {
   box-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
+/* ═══════════════════════════════════════════════
+   10 VISUAL HOTFIXES
+═══════════════════════════════════════════════ */
+
+/* FIX 3: Metric cards — gradient top border glow */
+.metric-card {
+  position: relative;
+  overflow: hidden;
+}
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0.6;
+}
+.metric-card:nth-child(2)::before {
+  background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+}
+.metric-card:nth-child(3)::before {
+  background: linear-gradient(90deg, transparent, var(--color-positive), transparent);
+}
+
+/* FIX 4: Metric value colors */
+.metric-value.positive { color: var(--color-positive); }
+.metric-value.negative { color: var(--color-negative); }
+
+/* FIX 5: Staggered watchlist row fade-in */
+@keyframes rowFadeIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.watchlist-row {
+  animation: rowFadeIn 0.35s ease-out both;
+}
+.watchlist-row:nth-child(1)  { animation-delay: 0.04s; }
+.watchlist-row:nth-child(2)  { animation-delay: 0.08s; }
+.watchlist-row:nth-child(3)  { animation-delay: 0.12s; }
+.watchlist-row:nth-child(4)  { animation-delay: 0.16s; }
+.watchlist-row:nth-child(5)  { animation-delay: 0.20s; }
+.watchlist-row:nth-child(6)  { animation-delay: 0.24s; }
+.watchlist-row:nth-child(7)  { animation-delay: 0.28s; }
+.watchlist-row:nth-child(8)  { animation-delay: 0.32s; }
+.watchlist-row:nth-child(n+9){ animation-delay: 0.36s; }
+
+/* FIX 6: Nav logo — sharper gradient + glow */
+.logo {
+  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 14px rgba(99, 102, 241, 0.35));
+  letter-spacing: -0.04em;
+}
+.logo-icon {
+  filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.9));
+}
+
+/* FIX 7: Section headers — left accent bar */
+.section-header h2 {
+  position: relative;
+  padding-left: 0.85rem;
+}
+.section-header h2::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10%; bottom: 10%;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-primary);
+}
+
+/* FIX 8: Positive/negative glow text */
+.positive {
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+}
+.negative {
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+}
+
+/* FIX 9: Button hover lift + glow (global primary) */
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+}
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* FIX 10: Chart card — more breathing room */
+.chart-card {
+  padding: 2rem;
+  min-height: 520px;
+}
+.chart-panel-price {
+  height: 340px;
+}
+.chart-panel-volume {
+  height: 90px;
+}
+
+/* Radar container — larger, no overflow clip */
+.radar-container {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1;
+  overflow: visible;
+}
+.visualization-card {
+  overflow: visible;
+}
+
+/* Glass cards — subtle inner highlight on top edge */
+.glass {
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 20px 40px rgba(0,0,0,0.25);
+}
+
+/* Smooth page transitions */
+.app-main > * {
+  animation: pageFadeIn 0.3s ease-out;
+}
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Better scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.22); }

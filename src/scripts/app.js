@@ -201,7 +201,7 @@ class App {
 
         <div style="display:flex; flex-direction:column; gap:1.5rem;">
           <div class="visualization-card glass">
-            <h2 style="font-size:1.15rem; font-weight:700; width:100%; text-align:left;">Simply Wall St Analytics</h2>
+            <h2 style="font-size:1.15rem; font-weight:700; width:100%; text-align:left;">Portfolio Health Score</h2>
             <div class="radar-container" id="dashboard-radar"></div>
           </div>
           

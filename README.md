@@ -1,24 +1,24 @@
-# 📈 Portfolio Tracker
+# Zeno
 
-> **Enterprise-grade, zero-login financial portfolio tracking PWA — built for privacy, speed, and precision.**
+> **Sleek, zero-login financial portfolio tracking PWA — built for privacy, speed, and precision.**
 
-[![Deploy to GitHub Pages](https://github.com/DylanGrow/portfolio-tracker/actions/workflows/deploy.yml/badge.svg)](https://github.com/DylanGrow/portfolio-tracker/actions/workflows/deploy.yml)
+[![Deploy](https://github.com/DylanGrow/zeno/actions/workflows/deploy.yml/badge.svg)](https://github.com/DylanGrow/zeno/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![PWA](https://img.shields.io/badge/PWA-ready-brightgreen)](https://dylangrow.github.io/portfolio-tracker/)
+[![PWA](https://img.shields.io/badge/PWA-ready-brightgreen)](https://dylangrow.github.io/zeno/)
 
-**🌐 Live App → [dylangrow.github.io/portfolio-tracker](https://dylangrow.github.io/portfolio-tracker/)**
+**🌐 Live App → [dylangrow.github.io/zeno](https://dylangrow.github.io/zeno/)**
 
 ---
 
 ## ✨ Features
 
 - **Zero login, zero servers** — all data stays in your browser, encrypted with AES-256
-- **Real-time quotes** via Finnhub API (AAPL, TSLA, MSFT, GOOGL, AMZN + any ticker)
-- **Interactive charts** — candlestick, line, volume overlays powered by Lightweight Charts
+- **Real-time quotes** via Finnhub API — stocks & crypto
+- **Interactive charts** — candlestick, area, volume overlays
 - **Portfolio analytics** — P&L, allocation radar, performance metrics
-- **Watchlist** — track symbols with live price changes
+- **Watchlist** — track any symbol with live price changes
 - **PWA-ready** — install on desktop or mobile, works offline
-- **Dark mode** — premium glassmorphism design, zero eye strain
+- **Dark mode** — premium glassmorphism design
 - **Privacy-first** — no telemetry, no tracking, no accounts
 
 ---
@@ -42,7 +42,7 @@
 - API key stored as **GitHub Actions secret** — never exposed in source code
 - All portfolio data encrypted with **AES-256-GCM** before localStorage writes
 - Passphrase-derived key using **PBKDF2** (310,000 iterations, SHA-256)
-- **Content Security Policy** headers enforced via `_headers`
+- **Content Security Policy** headers enforced
 - Zero external analytics, zero cookies, zero accounts
 
 ---
@@ -50,36 +50,32 @@
 ## 🏗️ Project Structure
 
 ```
-portfolio-tracker/
-├── .github/
-│   └── workflows/
-│       ├── deploy.yml          # CI/CD → GitHub Pages
-│       └── lighthouse-ci.yml   # Performance auditing
+zeno/
+├── .github/workflows/
+│   ├── deploy.yml          # CI/CD → GitHub Pages
+│   └── lighthouse-ci.yml   # Performance auditing
 ├── public/
-│   ├── manifest.json           # PWA manifest
-│   ├── sw.js                   # Service worker
-│   ├── favicon.svg
-│   └── _headers                # CSP + security headers
+│   ├── manifest.json       # PWA manifest
+│   ├── sw.js               # Service worker
+│   └── favicon.svg
 ├── src/
 │   ├── scripts/
-│   │   ├── app.js              # App bootstrap & routing
+│   │   ├── app.js
 │   │   ├── components/
-│   │   │   ├── ChartView.js    # Candlestick/line chart
-│   │   │   ├── PortfolioRadar.js  # Allocation radar chart
-│   │   │   └── WatchlistGrid.js   # Live watchlist
+│   │   │   ├── ChartView.js
+│   │   │   ├── PortfolioRadar.js
+│   │   │   └── WatchlistGrid.js
 │   │   ├── core/
-│   │   │   ├── DataService.js      # Finnhub API client
-│   │   │   ├── EncryptionService.js # AES-256 encryption
-│   │   │   ├── StateManager.js     # App state
-│   │   │   └── ErrorReporter.js    # Error handling
+│   │   │   ├── DataService.js
+│   │   │   ├── EncryptionService.js
+│   │   │   ├── StateManager.js
+│   │   │   └── ErrorReporter.js
 │   │   └── utils/
 │   │       ├── PortfolioCalculator.js
 │   │       └── formatters.js
-│   └── styles/
-│       └── main.css
+│   └── styles/main.css
 ├── index.html
-├── vite.config.js
-└── package.json
+└── vite.config.js
 ```
 
 ---
@@ -87,37 +83,14 @@ portfolio-tracker/
 ## 🔧 Local Development
 
 ```bash
-# Clone the repo
-git clone https://github.com/DylanGrow/portfolio-tracker.git
-cd portfolio-tracker
-
-# Install dependencies
+git clone https://github.com/DylanGrow/zeno.git
+cd zeno
 npm install
-
-# Create local env file
 echo "VITE_FINNHUB_KEY=your_key_here" > .env.local
-
-# Start dev server
 npm run dev
 ```
 
-Open **[http://localhost:5173](http://localhost:5173)** in your browser.
-
 > Get a free Finnhub API key at [finnhub.io](https://finnhub.io/register)
-
----
-
-## 📦 Deployment
-
-Deployment is fully automated via GitHub Actions:
-
-1. Push to `main` → workflow triggers
-2. Vite builds with the `VITE_FINNHUB_KEY` secret injected
-3. Output uploaded to GitHub Pages
-4. Live at `https://dylangrow.github.io/portfolio-tracker/`
-
-To set up your own deployment, add `VITE_FINNHUB_KEY` as a repository secret:
-**Settings → Secrets and variables → Actions → New repository secret**
 
 ---
 

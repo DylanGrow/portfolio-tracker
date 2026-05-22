@@ -1,7 +1,7 @@
 {
-  "name": "Portfolio Tracker Pro",
-  "short_name": "Portfolio Pro",
-  "description": "Enterprise-grade portfolio tracking with complete privacy and zero login requirements",
+  "name": "Zeno",
+  "short_name": "Zeno",
+  "description": "Sleek, privacy-first portfolio tracking with zero login requirements",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0f172a",

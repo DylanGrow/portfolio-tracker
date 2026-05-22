@@ -5,143 +5,293 @@ export class ChartView {
   constructor(container, dataService) {
     this.container = container;
     this.dataService = dataService;
-    this.chart = null;
+    this.priceChart = null;
+    this.volumeChart = null;
     this.currentTicker = 'AAPL';
     this.currentTimeframe = '1M';
+    this.chartMode = 'area'; // 'area' | 'candle'
+    this.assetType = 'stocks'; // 'stocks' | 'crypto'
   }
 
   async render(ticker, timeframe = '1M') {
     this.currentTicker = ticker;
     this.currentTimeframe = timeframe;
 
-    // Create wrapper layout if not exists
+    const isCrypto = this.dataService.isCrypto(ticker);
+    const badge = isCrypto ? '<span class="crypto-badge">₿ CRYPTO</span>' : '';
+
     this.container.innerHTML = `
       <div class="chart-header">
-        <div>
-          <h3 id="chart-title" style="font-size:1.25rem; font-weight:700;">${ticker} Technical Chart</h3>
-          <p id="chart-sub" style="font-size:0.85rem; color:var(--color-text-secondary);">Loading historical trends...</p>
+        <div class="chart-title-group">
+          <h3 id="chart-title">${ticker} ${badge}</h3>
+          <div id="chart-price-display" class="chart-price-display">
+            <span id="chart-price" class="chart-price-value">—</span>
+            <span id="chart-change" class="chart-change-badge">—</span>
+          </div>
+          <div id="chart-ohlc" class="chart-ohlc-row"></div>
         </div>
-        <div class="timeframe-controls" role="group" aria-label="Chart Timeframe Selection">
-          <button class="timeframe-btn ${timeframe === '1D' ? 'active' : ''}" data-tf="1D">1D</button>
-          <button class="timeframe-btn ${timeframe === '1W' ? 'active' : ''}" data-tf="1W">1W</button>
-          <button class="timeframe-btn ${timeframe === '1M' ? 'active' : ''}" data-tf="1M">1M</button>
-          <button class="timeframe-btn ${timeframe === '3M' ? 'active' : ''}" data-tf="3M">3M</button>
-          <button class="timeframe-btn ${timeframe === '1Y' ? 'active' : ''}" data-tf="1Y">1Y</button>
+        <div class="chart-controls-group">
+          <div class="chart-mode-toggle" role="group" aria-label="Chart type">
+            <button class="mode-btn ${this.chartMode === 'area' ? 'active' : ''}" data-mode="area">
+              <svg viewBox="0 0 20 14" fill="none" width="16" height="11"><polyline points="0,12 5,6 10,9 15,3 20,6" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="0,12 5,6 10,9 15,3 20,6 20,14 0,14" fill="currentColor" opacity="0.15"/></svg>
+              Area
+            </button>
+            <button class="mode-btn ${this.chartMode === 'candle' ? 'active' : ''}" data-mode="candle">
+              <svg viewBox="0 0 20 16" fill="none" width="14" height="12">
+                <rect x="2" y="4" width="4" height="8" rx="0.5" fill="currentColor"/>
+                <line x1="4" y1="1" x2="4" y2="4" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="4" y1="12" x2="4" y2="15" stroke="currentColor" stroke-width="1.5"/>
+                <rect x="8" y="6" width="4" height="6" rx="0.5" fill="#ef4444"/>
+                <line x1="10" y1="2" x2="10" y2="6" stroke="#ef4444" stroke-width="1.5"/>
+                <line x1="10" y1="12" x2="10" y2="15" stroke="#ef4444" stroke-width="1.5"/>
+                <rect x="14" y="3" width="4" height="9" rx="0.5" fill="currentColor"/>
+                <line x1="16" y1="0" x2="16" y2="3" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="16" y1="12" x2="16" y2="15" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              Candle
+            </button>
+          </div>
+          <div class="timeframe-controls" role="group" aria-label="Chart Timeframe">
+            ${['1D','1W','1M','3M','1Y'].map(tf =>
+              `<button class="timeframe-btn ${timeframe === tf ? 'active' : ''}" data-tf="${tf}">${tf}</button>`
+            ).join('')}
+          </div>
         </div>
       </div>
-      <div class="chart-canvas-container">
-        <canvas id="main-technical-canvas" role="img" aria-label="Stock price chart for ${ticker}"></canvas>
+
+      <div class="chart-panels-wrapper">
+        <div class="chart-panel chart-panel-price">
+          <canvas id="price-canvas" role="img" aria-label="Price chart for ${ticker}"></canvas>
+        </div>
+        <div class="chart-panel chart-panel-volume">
+          <div class="volume-label">VOL</div>
+          <canvas id="volume-canvas" role="img" aria-label="Volume chart for ${ticker}"></canvas>
+        </div>
       </div>
     `;
 
-    // Bind controls
-    const buttons = this.container.querySelectorAll('.timeframe-btn');
-    buttons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tf = e.target.getAttribute('data-tf');
-        this.render(this.currentTicker, tf);
+    // Bind timeframe buttons
+    this.container.querySelectorAll('.timeframe-btn').forEach(btn => {
+      btn.addEventListener('click', e => this.render(this.currentTicker, e.target.getAttribute('data-tf')));
+    });
+
+    // Bind mode toggle buttons
+    this.container.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        this.chartMode = e.currentTarget.getAttribute('data-mode');
+        this.render(this.currentTicker, this.currentTimeframe);
       });
     });
 
-    const canvas = this.container.querySelector('#main-technical-canvas');
-    if (!canvas) return;
-
     try {
-      const historicalData = await this.dataService.getHistoricalData(ticker, timeframe);
-      const quote = await this.dataService.getQuote(ticker);
-      
-      const priceText = formatCurrency(quote.price);
+      const [historicalData, quote] = await Promise.all([
+        this.dataService.getHistoricalData(ticker, timeframe),
+        this.dataService.getQuote(ticker)
+      ]);
+
+      // Update price display
       const isPositive = quote.changePercent >= 0;
-      const pctText = `${isPositive ? '+' : ''}${quote.changePercent.toFixed(2)}%`;
-      
-      const subEl = this.container.querySelector('#chart-sub');
-      if (subEl) {
-        subEl.innerHTML = `<span style="font-size:1rem; font-weight:700; color:#fff; margin-right:0.5rem;">${priceText}</span> <span class="${isPositive ? 'positive' : 'negative'}" style="font-weight:600;">${pctText}</span>`;
+      const priceEl = this.container.querySelector('#chart-price');
+      const changeEl = this.container.querySelector('#chart-change');
+      const ohlcEl = this.container.querySelector('#chart-ohlc');
+
+      if (priceEl) {
+        const formatted = isCrypto && quote.price < 1
+          ? `$${quote.price.toFixed(6)}`
+          : formatCurrency(quote.price);
+        priceEl.textContent = formatted;
+        priceEl.classList.add('price-flash', isPositive ? 'flash-green' : 'flash-red');
+        setTimeout(() => priceEl.classList.remove('price-flash', 'flash-green', 'flash-red'), 600);
+      }
+      if (changeEl) {
+        const pct = `${isPositive ? '+' : ''}${quote.changePercent.toFixed(2)}%`;
+        changeEl.textContent = pct;
+        changeEl.className = `chart-change-badge ${isPositive ? 'positive' : 'negative'}`;
+      }
+      if (ohlcEl && historicalData.highs) {
+        const h = historicalData.highs;
+        const l = historicalData.lows;
+        const periodHigh = Math.max(...h).toFixed(2);
+        const periodLow  = Math.min(...l).toFixed(2);
+        ohlcEl.innerHTML = `
+          <span class="ohlc-item">H <strong>$${periodHigh}</strong></span>
+          <span class="ohlc-item">L <strong>$${periodLow}</strong></span>
+          <span class="ohlc-item">O <strong>$${quote.open?.toFixed(2) || '—'}</strong></span>
+        `;
       }
 
-      if (this.chart) {
-        this.chart.destroy();
-      }
+      // Destroy previous charts
+      if (this.priceChart)  { this.priceChart.destroy();  this.priceChart  = null; }
+      if (this.volumeChart) { this.volumeChart.destroy(); this.volumeChart = null; }
 
-      // Check if we are in high-contrast mode
-      const isHighContrast = window.matchMedia('(prefers-contrast: more)').matches;
-      const lineColor = isHighContrast ? '#ffffff' : (isPositive ? '#10b981' : '#ef4444');
-      const gradientColor = isHighContrast ? 'rgba(255,255,255,0.05)' : (isPositive ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)');
+      const priceCanvas  = this.container.querySelector('#price-canvas');
+      const volumeCanvas = this.container.querySelector('#volume-canvas');
+      if (!priceCanvas || !volumeCanvas) return;
 
-      const ctx = canvas.getContext('2d');
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(0, gradientColor);
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      const upColor   = '#10b981';
+      const downColor = '#ef4444';
+      const lineColor = isPositive ? upColor : downColor;
 
-      this.chart = new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels: historicalData.dates,
-          datasets: [{
-            label: ticker,
-            data: historicalData.prices,
-            borderColor: lineColor,
-            backgroundColor: gradient,
-            borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 5,
-            pointHoverBackgroundColor: lineColor,
-            pointHoverBorderColor: '#ffffff',
-            pointHoverBorderWidth: 1.5,
-            tension: 0.15,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
+      // ── Price chart ──────────────────────────────────────────────
+      const pCtx = priceCanvas.getContext('2d');
+
+      if (this.chartMode === 'candle' && historicalData.opens) {
+        // Candlestick via floating bar chart trick
+        const candleData = historicalData.prices.map((close, i) => {
+          const open  = historicalData.opens[i]  ?? close;
+          const high  = historicalData.highs[i]  ?? close;
+          const low   = historicalData.lows[i]   ?? close;
+          const isUp  = close >= open;
+          return { open, close, high, low, isUp };
+        });
+
+        this.priceChart = new Chart(pCtx, {
+          type: 'bar',
+          data: {
+            labels: historicalData.dates,
+            datasets: [
+              // Wicks (high-low range)
+              {
+                label: 'Wick',
+                data: candleData.map(d => [d.low, d.high]),
+                backgroundColor: candleData.map(d => d.isUp ? upColor : downColor),
+                barThickness: 1,
+                order: 2
+              },
+              // Bodies (open-close range)
+              {
+                label: 'Body',
+                data: candleData.map(d => [Math.min(d.open, d.close), Math.max(d.open, d.close)]),
+                backgroundColor: candleData.map(d => d.isUp ? upColor + 'cc' : downColor + 'cc'),
+                borderColor:     candleData.map(d => d.isUp ? upColor : downColor),
+                borderWidth: 1,
+                barPercentage: 0.6,
+                order: 1
+              }
+            ]
           },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: 'rgba(17, 24, 39, 0.95)',
-              titleColor: '#f3f4f6',
-              bodyColor: '#f3f4f6',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              borderWidth: 1,
-              padding: 10,
-              bodyFont: { family: 'Inter', weight: '600' },
-              titleFont: { family: 'Inter', weight: '700' },
-              callbacks: {
-                label: (context) => {
-                  return ` Price: ${formatCurrency(context.parsed.y)}`;
+          options: this._chartOptions(formatCurrency, true)
+        });
+      } else {
+        // Area chart with gradient glow
+        const gradient = pCtx.createLinearGradient(0, 0, 0, priceCanvas.offsetHeight || 320);
+        gradient.addColorStop(0, lineColor + '55');
+        gradient.addColorStop(0.5, lineColor + '18');
+        gradient.addColorStop(1, lineColor + '00');
+
+        this.priceChart = new Chart(pCtx, {
+          type: 'line',
+          data: {
+            labels: historicalData.dates,
+            datasets: [{
+              label: ticker,
+              data: historicalData.prices,
+              borderColor: lineColor,
+              borderWidth: 2.5,
+              backgroundColor: gradient,
+              pointRadius: 0,
+              pointHoverRadius: 6,
+              pointHoverBackgroundColor: lineColor,
+              pointHoverBorderColor: '#fff',
+              pointHoverBorderWidth: 2,
+              tension: 0.3,
+              fill: true
+            }]
+          },
+          options: this._chartOptions(formatCurrency, false)
+        });
+      }
+
+      // ── Volume chart ─────────────────────────────────────────────
+      if (historicalData.volumes && historicalData.volumes.length) {
+        const vCtx = volumeCanvas.getContext('2d');
+        const volColors = historicalData.prices.map((p, i) => {
+          const prev = i > 0 ? historicalData.prices[i - 1] : p;
+          return p >= prev ? upColor + 'aa' : downColor + 'aa';
+        });
+
+        this.volumeChart = new Chart(vCtx, {
+          type: 'bar',
+          data: {
+            labels: historicalData.dates,
+            datasets: [{
+              label: 'Volume',
+              data: historicalData.volumes,
+              backgroundColor: volColors,
+              borderWidth: 0,
+              barPercentage: 0.8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 400 },
+            plugins: { legend: { display: false }, tooltip: {
+              callbacks: { label: ctx => ` Vol: ${(ctx.parsed.y / 1e6).toFixed(2)}M` }
+            }},
+            scales: {
+              x: { display: false },
+              y: {
+                grid: { color: 'rgba(255,255,255,0.03)' },
+                ticks: { color: '#6b7280', font: { size: 9 },
+                  callback: v => v >= 1e6 ? `${(v/1e6).toFixed(1)}M` : `${(v/1e3).toFixed(0)}K`
                 }
               }
             }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(255, 255, 255, 0.03)' },
-              ticks: { color: '#9ca3af', font: { family: 'Inter', size: 10 } }
-            },
-            y: {
-              grid: { color: 'rgba(255, 255, 255, 0.03)' },
-              ticks: {
-                color: '#9ca3af',
-                font: { family: 'Inter', size: 10 },
-                callback: (value) => formatCurrency(value)
-              }
-            }
           }
-        }
-      });
+        });
+      }
+
     } catch (e) {
-      console.error("Chart render error:", e);
+      console.error('Chart render error:', e);
     }
   }
 
+  _chartOptions(formatCurrency, isCandle) {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 500, easing: 'easeOutQuart' },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15, 23, 42, 0.97)',
+          titleColor: '#f1f5f9',
+          bodyColor: '#cbd5e1',
+          borderColor: 'rgba(255,255,255,0.08)',
+          borderWidth: 1,
+          padding: 12,
+          cornerRadius: 8,
+          bodyFont: { family: 'Inter', weight: '600', size: 13 },
+          titleFont: { family: 'Inter', weight: '700', size: 12 },
+          callbacks: {
+            label: ctx => isCandle
+              ? ` ${ctx.dataset.label === 'Body' ? 'Range' : 'Wick'}: $${ctx.parsed._custom?.barStart?.toFixed(2) ?? ''} → $${ctx.parsed._custom?.barEnd?.toFixed(2) ?? ''}`
+              : ` ${formatCurrency(ctx.parsed.y)}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
+          ticks: { color: '#6b7280', font: { family: 'Inter', size: 10 }, maxTicksLimit: 8 }
+        },
+        y: {
+          position: 'right',
+          grid: { color: 'rgba(255,255,255,0.04)', drawBorder: false },
+          ticks: {
+            color: '#6b7280',
+            font: { family: 'Inter', size: 10 },
+            callback: v => formatCurrency(v)
+          }
+        }
+      }
+    };
+  }
+
   destroy() {
-    if (this.chart) {
-      this.chart.destroy();
-      this.chart = null;
-    }
+    if (this.priceChart)  { this.priceChart.destroy();  this.priceChart  = null; }
+    if (this.volumeChart) { this.volumeChart.destroy(); this.volumeChart = null; }
   }
 }

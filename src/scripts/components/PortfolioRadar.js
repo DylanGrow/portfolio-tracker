@@ -14,7 +14,7 @@ export class PortfolioRadar {
 
     const svg = d3.select(this.container)
       .append('svg')
-      .attr('viewBox', `-40 -40 ${this.width + 80} ${this.height + 80}`)
+      .attr('viewBox', `-100 -100 ${this.width + 200} ${this.height + 200}`)
       .attr('width', '100%')
       .attr('height', '100%')
       .style('overflow', 'visible')

@@ -337,38 +337,40 @@ class App {
           <button type="submit" class="btn btn-primary" style="align-self:flex-end; height:46px;">Add Trade</button>
         </form>
 
-        <table class="portfolio-table">
-          <thead>
-            <tr>
-              <th>Ticker</th>
-              <th>Shares</th>
-              <th>Avg Cost</th>
-              <th>Cost Basis</th>
-              <th>Market Price</th>
-              <th>Market Value</th>
-              <th>Allocation</th>
-              <th>Total Return</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${holdings.length === 0 ? '<tr><td colspan="8" style="text-align:center; color:var(--color-text-secondary); padding:3rem;">No holdings in ledger yet. Add trades using the form above.</td></tr>' : ''}
-            ${holdings.map(h => `
+        <div class="table-responsive">
+          <table class="portfolio-table">
+            <thead>
               <tr>
-                <td style="font-weight:700; color:#fff;">${h.ticker} <span style="font-size:0.75rem; font-weight:500; color:var(--color-text-secondary); display:block;">${h.sector}</span></td>
-                <td style="font-variant-numeric:tabular-nums;">${h.shares.toFixed(4).replace(/\\.0000$/, '')}</td>
-                <td style="font-variant-numeric:tabular-nums;">${formatCurrency(h.avgCost)}</td>
-                <td style="font-variant-numeric:tabular-nums;">${formatCurrency(h.totalCost)}</td>
-                <td style="font-variant-numeric:tabular-nums;">${formatCurrency(h.currentPrice)}</td>
-                <td style="font-variant-numeric:tabular-nums; color:#fff;">${formatCurrency(h.currentValue)}</td>
-                <td style="font-variant-numeric:tabular-nums;">${h.allocation.toFixed(2)}%</td>
-                <td style="font-variant-numeric:tabular-nums;" class="${h.totalGain >= 0 ? 'positive' : 'negative'}">
-                  ${formatCurrency(h.totalGain)}
-                  <span style="font-size:0.75rem; display:block; font-weight:700;">${formatPercent(h.totalGainPercent)}</span>
-                </td>
+                <th>Ticker</th>
+                <th>Shares</th>
+                <th>Avg Cost</th>
+                <th>Cost Basis</th>
+                <th>Market Price</th>
+                <th>Market Value</th>
+                <th>Allocation</th>
+                <th>Total Return</th>
               </tr>
-            `).join('')}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              ${holdings.length === 0 ? '<tr><td colspan="8" style="text-align:center; color:var(--color-text-secondary); padding:3rem;">No holdings in ledger yet. Add trades using the form above.</td></tr>' : ''}
+              ${holdings.map(h => `
+                <tr>
+                  <td style="font-weight:700; color:#fff;">${h.ticker} <span style="font-size:0.75rem; font-weight:500; color:var(--color-text-secondary); display:block;">${h.sector}</span></td>
+                  <td style="font-variant-numeric:tabular-nums;">${h.shares.toFixed(4).replace(/\\.0000$/, '')}</td>
+                  <td style="font-variant-numeric:tabular-nums;">${formatCurrency(h.avgCost)}</td>
+                  <td style="font-variant-numeric:tabular-nums;">${formatCurrency(h.totalCost)}</td>
+                  <td style="font-variant-numeric:tabular-nums;">${formatCurrency(h.currentPrice)}</td>
+                  <td style="font-variant-numeric:tabular-nums; color:#fff;">${formatCurrency(h.currentValue)}</td>
+                  <td style="font-variant-numeric:tabular-nums;">${h.allocation.toFixed(2)}%</td>
+                  <td style="font-variant-numeric:tabular-nums;" class="${h.totalGain >= 0 ? 'positive' : 'negative'}">
+                    ${formatCurrency(h.totalGain)}
+                    <span style="font-size:0.75rem; display:block; font-weight:700;">${formatPercent(h.totalGainPercent)}</span>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
       </div>
     `;
 
